@@ -1,25 +1,40 @@
 import { Alert, Image, Linking, Modal, Pressable, SafeAreaView, StyleSheet, Text, TextInput, TouchableOpacity, View } from "react-native";
 import * as LocalAuthentication from 'expo-local-authentication';
 import { FontAwesome } from '@expo/vector-icons';
-import { useState } from "react";
+import { useEffect, useState } from "react";
+import { backend_api } from "../services/Api";
+import { useNavigation, useRouter } from "expo-router";
+import md5 from "md5";
+import { storage } from "../services/utils";
 
 export default function Page() {
+  const router = useRouter();
+  const [loading, setLoading] = useState(false);
   const [login_modal, setLoginModal] = useState(false)
   const [help_modal, setHelpModal] = useState(false)
   const [login_form, setLoginForm] = useState({})
 
 
-  const [user, setUser] = useState({
-    // name: "João",
-    // email: "joaozinho@gmail.com",
-    // username: "joaozinho",
-  })
+  const [user, setUser] = useState({})
 
-  const handleSubmitLogin = () => {
+  const handleSubmitLogin = async () => {
 
     try {
       if (!login_form.username || !login_form.password) throw new Error("Preencha todos os campos")
 
+      const payload = {
+        login: login_form.username,
+        password: md5(login_form.password),
+      }
+
+      const user_login_response = await backend_api.post("/users/login", payload)
+      const user_login_data = user_login_response.data
+
+      if (!user_login_data.id) throw new Error(user_login_data.error ?? "Erro ao fazer login")
+
+      await storage.set("user", user_login_data)
+
+      router.push("/home")
 
       setLoginForm({})
       setLoginModal(false)
@@ -48,10 +63,16 @@ export default function Page() {
     if (error) return setLoginModal(true);
 
     if (success) {
-      Alert.alert("Autenticado com sucesso");
-
+      router.push("/home")
     }
   }
+
+  useEffect(() => {
+    (async () => {
+      const user_data = await storage.get("user")
+      if (user_data) setUser(user_data)
+    })()
+  }, [])
 
   return (
     <SafeAreaView style={{ flex: 1, padding: 10 }}>
@@ -63,7 +84,11 @@ export default function Page() {
               <Text style={{ fontWeight: "bold" }}>Logado como: </Text>
               <Text>{user.username}</Text>
             </View>
-            <Text>Alterar conta</Text>
+            <TouchableOpacity onPress={() => {
+              setLoginModal(true)
+            }}>
+              <Text>Alterar conta</Text>
+            </TouchableOpacity>
           </> : <Pressable onPress={() => setLoginModal(true)}>
             <Text style={{ fontWeight: "bold" }}>Faça login</Text>
           </Pressable>}
@@ -111,7 +136,7 @@ export default function Page() {
         </View>
       </Modal>
 
-      <Modal visible={help_modal} animationType="slide" transparent={true} onRequestClose={() => setHelpModal(false)}>
+      <Modal visible={help_modal} animationType="fade" transparent={true} onRequestClose={() => setHelpModal(false)}>
         <View style={{ flex: 1, justifyContent: "center", backgroundColor: "rgba(0,0,0,.4)", padding: 20 }}>
           <View style={{ backgroundColor: "#fff", padding: 20, borderRadius: 20 }}>
             <View style={{ flexDirection: "row", justifyContent: "space-between", alignItems: "center", }}>
