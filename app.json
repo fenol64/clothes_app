@@ -27,6 +27,15 @@
     "web": {
       "favicon": "./assets/favicon.png",
       "bundler": "metro"
-    }
+    },
+    "plugins": [
+      [
+        "expo-image-picker",
+        {
+          "photosPermission": "O app precisa accessar suas fotos.",
+          "cameraPermission": "O app precisa accessar sua câmera."
+        }
+      ]
+    ]
   }
 }

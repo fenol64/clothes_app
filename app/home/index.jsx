@@ -42,6 +42,16 @@ const home = () => {
             icon: <FontAwesome5 name="plus" size={24} color="black" />,
             onPress: () => router.push("/sales/new")
         },
+        {
+            title: "Novo cliente",
+            icon: <FontAwesome5 name="user-plus" size={24} color="black" />,
+            onPress: () => router.push("/clients/new")
+        },
+        {
+            title: "Nova loja",
+            icon: <FontAwesome5 name="store" size={24} color="black" />,
+            onPress: () => router.push("/stores/new")
+        }
     ]
 
     const cards = [
@@ -78,7 +88,16 @@ const home = () => {
 
         <View style={{ marginTop: 20 }}>
 
+
+            <View style={{
+                padding: 10,
+            }}>
+                <Text style={{ fontSize: 24, fontWeight: 900 }}>Vendas do mês</Text>
+                <Text style={{ fontSize: 18, fontWeight: 900 }}>R$ 0,00</Text>
+            </View>
+
             <View style={{ marginTop: 20 }}>
+                <Text style={{ fontSize: 24, fontWeight: 900, marginBottom: 10 }}>Atalhos:</Text>
                 <ScrollView horizontal={true}>
                     {shortcuts.map((card, index) => <TouchableOpacity key={index} onPress={card.onPress} style={{
                         width: 150,
@@ -97,15 +116,6 @@ const home = () => {
                 </ScrollView>
             </View>
 
-            <View style={{
-                borderRadius: 10,
-                borderWidth: 1,
-                borderColor: "#ccc",
-                padding: 10,
-            }}>
-                <Text style={{ fontSize: 24, fontWeight: 900 }}>Vendas do mês</Text>
-                <Text style={{ fontSize: 18, fontWeight: 900 }}>R$ 0,00</Text>
-            </View>
 
             <View style={{ marginTop: 20 }}>
                 <Text style={{ fontSize: 24, fontWeight: 900, marginBottom: 10 }}>Menu:</Text>
