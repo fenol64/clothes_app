@@ -53,11 +53,10 @@ export default function Page() {
     if (!enrolled) return Alert.alert("Você não tem nenhuma biometria cadastrada");
 
     const { success, error } = await LocalAuthentication.authenticateAsync({
-      promptMessage: "Login com biometria",
+      promptMessage: "Autenticação",
       cancelLabel: "Cancelar",
       fallbackLabel: "Senha",
       disableDeviceFallback: true,
-
     });
 
     if (error) return setLoginModal(true);
@@ -169,7 +168,7 @@ export default function Page() {
   );
 }
 
-const styles = StyleSheet.create({
+export const styles = StyleSheet.create({
   container: {
     padding: 10,
   },

@@ -1,5 +1,7 @@
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
+export const extractNumbers = (str) => str.replace(/[^0-9]/g, '');
+
 const isJson = (str) => {
     try {
         JSON.parse(str); 2

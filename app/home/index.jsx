@@ -45,12 +45,12 @@ const home = () => {
         {
             title: "Novo cliente",
             icon: <FontAwesome5 name="user-plus" size={24} color="black" />,
-            onPress: () => router.push("/clients/new")
+            onPress: () => router.push("/home/customers/new")
         },
         {
             title: "Nova loja",
             icon: <FontAwesome5 name="store" size={24} color="black" />,
-            onPress: () => router.push("/stores/new")
+            onPress: () => router.push("/home/stores/new")
         },
         {
             title: "Vendas do dia",
@@ -68,12 +68,12 @@ const home = () => {
         {
             title: "Clientes",
             icon: <FontAwesome5 name="users" size={24} color="black" />,
-            onPress: () => router.push("/clients")
+            onPress: () => router.push("/home/customers")
         },
         {
             title: "Lojas",
             icon: <FontAwesome5 name="store" size={24} color="black" />,
-            onPress: () => router.push("/stores")
+            onPress: () => router.push("/home/stores")
         },
         {
             title: "Relatórios",
