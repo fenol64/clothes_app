@@ -34,15 +34,14 @@ const customers = () => {
     const saveCustomer = async () => {
         setLoading(true)
         try {
-            if (!customer.name) throw new Error("Preencha o nome do cliente")
+            if (!customer.name || customer.length <= 3) throw new Error("Preencha o nome do cliente")
 
             const user = await storage.get("user")
-
 
             const payload = {
                 user_uuid: user.uuid,
                 name: customer.name,
-                document: customer.document,
+                document: extractNumbers(customer.document),
                 phone: extractNumbers(customer.phone),
                 email: customer.email,
             }
@@ -105,7 +104,7 @@ const customers = () => {
                     <Text style={{ fontSize: 18, fontWeight: "bold" }}>CPF</Text>
                     <TextInput
                         style={{ fontSize: 16, paddingVertical: 3 }}
-                        onChangeText={text => handleInputChange("cpf", text)}
+                        onChangeText={text => handleInputChange("document", text)}
                         value={customer.document}
                         placeholder="CPF do cliente"
                         keyboardType='numeric'

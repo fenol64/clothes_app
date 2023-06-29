@@ -2,6 +2,12 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 
 export const extractNumbers = (str) => str.replace(/[^0-9]/g, '');
 
+export const mysqlDateTime = (date) => {
+    if (!date) date = new Date();
+
+    return date.toISOString().slice(0, 19).replace('T', ' ');
+}
+
 const isJson = (str) => {
     try {
         JSON.parse(str); 2

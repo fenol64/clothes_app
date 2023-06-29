@@ -1,9 +1,9 @@
 import { FontAwesome5 } from '@expo/vector-icons';
 import { Link, useRouter } from 'expo-router';
 import React, { useEffect, useState } from 'react';
-import { ActivityIndicator, StatusBar, Text, TouchableOpacity, View } from 'react-native';
+import { ActivityIndicator, Alert, StatusBar, Text, TouchableOpacity, View } from 'react-native';
 import { backend_api } from '../../../services/Api';
-import { storage } from '../../../services/utils';
+import { mysqlDateTime, storage } from '../../../services/utils';
 
 // import { Container } from './styles';
 
@@ -33,6 +33,42 @@ const customers = () => {
             setLoading(false)
         }
     }
+
+    const deleteCustomer = async (uuid) => {
+        setLoading(true)
+
+        try {
+            Alert.alert(
+                "Atenção",
+                "Deseja realmente excluir este cliente?",
+                [
+                    {
+                        text: "Cancelar",
+                        onPress: () => console.log("Cancel Pressed"),
+                        style: "cancel"
+                    },
+                    {
+                        text: "Sim", onPress: async () => {
+                            const response = await backend_api.put(`/customers`, {
+                                id: null,
+                                uuid,
+                                deleted_at: mysqlDateTime(),
+                            }, { timeout: 10000 })
+                            const data = response.data
+                            console.log({ data })
+                            getCustomers()
+                        }
+                    }
+                ],
+                { cancelable: false }
+            );
+        } catch (error) {
+            console.log(error)
+        } finally {
+            setLoading(false)
+        }
+    }
+
 
     useEffect(() => {
         getCustomers()
@@ -64,7 +100,11 @@ const customers = () => {
                         <TouchableOpacity onPress={() => router.push(`/home/customers/${customer.uuid}`)}>
                             <FontAwesome5 name="edit" size={24} color="black" style={{ marginRight: 20 }} />
                         </TouchableOpacity>
-                        <FontAwesome5 name="trash" size={24} color="black" />
+                        <TouchableOpacity onPress={() => {
+                            deleteCustomer(customer.uuid)
+                        }}>
+                            <FontAwesome5 name="trash" size={24} color="black" />
+                        </TouchableOpacity>
                     </View>
                 </View>
             })}
