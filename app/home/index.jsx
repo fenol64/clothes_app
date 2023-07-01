@@ -75,11 +75,11 @@ const home = () => {
             icon: <FontAwesome5 name="store" size={24} color="black" />,
             onPress: () => router.push("/home/stores")
         },
-        {
-            title: "Relatórios",
-            icon: <FontAwesome5 name="file-alt" size={24} color="black" />,
-            onPress: () => router.push("/reports")
-        },
+        // {
+        //     title: "Relatórios",
+        //     icon: <FontAwesome5 name="file-alt" size={24} color="black" />,
+        //     onPress: () => router.push("/reports")
+        // },
 
     ]
 
@@ -129,7 +129,7 @@ const home = () => {
 
 
             <View style={styles.section}>
-                <View style={{ flexDirection: "row", justifyContent: "center", alignItems: "baseline", flexWrap: "wrap" }}>
+                <View style={{ flexDirection: "row", justifyContent: "flex-start", alignItems: "baseline", flexWrap: "wrap" }}>
                     {cards.map((card, index) => <TouchableOpacity key={index} onPress={card.onPress} style={{
                         width: "49%",
                         borderRadius: 10,

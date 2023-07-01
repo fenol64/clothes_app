@@ -39,7 +39,7 @@ const stores = () => {
                 <Text style={{ fontSize: 24, fontWeight: "bold" }}>Lojas</Text>
             </View>
             <View style={{ flex: 1, flexDirection: "row", justifyContent: "flex-end", alignItems: "center" }}>
-                <FontAwesome5 name="search" size={24} color="black" style={{ marginRight: 20 }} />
+                {/* <FontAwesome5 name="search" size={24} color="black" style={{ marginRight: 20 }} /> */}
                 <Link href="/home/stores/new">
                     <FontAwesome5 name="plus" size={24} color="black" />
                 </Link>

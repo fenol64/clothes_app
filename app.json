@@ -22,7 +22,11 @@
       "adaptiveIcon": {
         "foregroundImage": "./assets/logo_icon.png",
         "backgroundColor": "#ffffff"
-      }
+      },
+      "permissions": [
+        "android.permission.RECORD_AUDIO"
+      ],
+      "package": "com.fenol64.clothes_app"
     },
     "web": {
       "favicon": "./assets/logo_icon.png",
@@ -36,6 +40,11 @@
           "cameraPermission": "O app precisa accessar sua câmera."
         }
       ]
-    ]
+    ],
+    "extra": {
+      "eas": {
+        "projectId": "c4503362-c236-4930-bcab-35790eedf713"
+      }
+    }
   }
 }

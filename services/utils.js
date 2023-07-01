@@ -8,6 +8,29 @@ export const mysqlDateTime = (date) => {
     return date.toISOString().slice(0, 19).replace('T', ' ');
 }
 
+export const priceMask = (value) => {
+    if (!value) return 'R$ 0,00';
+
+    value = value.toString().replace(/\D/g, '');
+    value = value.toString().replace(/(\d)(\d{2})$/, '$1,$2');
+    value = value.toString().replace(/(?=(\d{3})+(\D))\B/g, '.');
+    value = `R$ ${value}`;
+
+    return value;
+}
+
+export const dateMask = (value) => {
+    if (!value) return '';
+    console.log(value)
+    const [date, time] = value.split("T");
+
+    const [year, month, day] = date.split("-");
+    const [hour, minute] = time.split(":");
+
+    return `${day}/${month}/${year} ${hour}:${minute}`;
+}
+
+
 const isJson = (str) => {
     try {
         JSON.parse(str); 2
