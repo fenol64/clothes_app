@@ -168,9 +168,7 @@ const sales = () => {
             <Select options={stores} onChange={(selected) => {
                 setSearchForm({ ...search_form, store_uuid: selected.value })
             }} />
-            <Button title="Pesquisar" onPress={() => {
-                console.log(search_form)
-            }} />
+            <Button title="Pesquisar" onPress={getSales} />
 
         </View>}
 
