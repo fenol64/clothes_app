@@ -1,17 +1,29 @@
-import React, { useRef, useState } from 'react';
-import { Alert, Button, Image, Modal, StatusBar, Text, TouchableOpacity, View } from 'react-native';
+import React, { useEffect, useRef, useState } from 'react';
+import { Alert, Button, Image, Modal, StatusBar, Text, TextInput, TouchableOpacity, View } from 'react-native';
 import * as ImagePicker from 'expo-image-picker';
 import { Camera } from 'expo-camera';
 import { FontAwesome, FontAwesome5 } from '@expo/vector-icons';
+import { useLocalSearchParams, useRouter } from 'expo-router';
+import { backend_api } from '../../services/Api';
+import { CheckoutDateMask } from '../../services/utils';
 
 // import { Container } from './styles';
 
 const sales = () => {
+    const route = useRouter();
+    const params = useLocalSearchParams();
 
     const [image, setImage] = useState(null);
     const [camera_modal, setCameraModal] = useState(false);
     const [chose_type_modal, setChoseTypeModal] = useState(false);
     const [camera_type, setCameraType] = useState(Camera.Constants.Type.back);
+    const [checkout, setCheckout] = useState({});
+    const [checkout_item_form, setCheckoutItemForm] = useState({});
+    const total = checkout.items?.reduce((total, item) => {
+        return total + (item.price * item.quantity);
+    }, 0);
+
+
 
     const camera_ref = useRef(null);
 
@@ -19,7 +31,15 @@ const sales = () => {
 
         var result = null;
         if (type == "camera") {
+
+            const { status } = await Camera.requestCameraPermissionsAsync();
+            if (status !== 'granted') {
+                Alert.alert('Precisamos de permissão para usar a câmera');
+                return;
+            }
+
             setCameraModal(true);
+            return;
         }
 
         if (type == "gallery") {
@@ -48,13 +68,90 @@ const sales = () => {
         }
     };
 
-    return <View style={{ flex: 1, paddingTop: StatusBar.currentHeight, padding: 10 }}>
-        <Text>Nova venda:</Text>
+    const createCheckout = async () => {
+    }
 
-        <View style={{ flex: 1, alignItems: 'center', justifyContent: 'center' }}>
-            <Button title="Pick an image from camera roll" onPress={() => setChoseTypeModal(true)} />
-            {image && <Image source={{ uri: image }} style={{ width: 200, height: 200 }} />}
+    const getCheckout = async (uuid) => {
+        try {
+            const response = backend_api.get(`/checkouts`, { params: { uuid } });
+            const response_items = backend_api.get(`/checkouts/items`, { params: { checkout_uuid: uuid } });
+            const response_payments = backend_api.get(`/checkouts/payments`, { params: { checkout_uuid: uuid } });
+
+            const [checkout, items, payments] = await Promise.all([response, response_items, response_payments]);
+
+            const payload = {
+                ...checkout.data[0],
+                items: items.data ?? [],
+                payments: payments.data ?? []
+            }
+
+            setCheckout(payload);
+
+        } catch (error) {
+            Alert.alert("Erro ao buscar venda");
+            route.navigate("/sales");
+        }
+    }
+
+
+    useEffect(() => {
+        if (params.uuid && params.uuid != "new") getCheckout(params.uuid);
+        else createCheckout();
+    }, [params]);
+
+    return <View style={{ flex: 1, paddingTop: StatusBar.currentHeight, padding: 10 }}>
+
+        {checkout?.uuid && <View style={{ flexDirection: "row", justifyContent: "space-between", alignItems: "center", marginBottom: 20, padding: 5 }}>
+            <View style={{ flexDirection: "row", justifyContent: "space-between", alignItems: "center" }}>
+                <TouchableOpacity onPress={() => route.navigate("/sales")}>
+                    <FontAwesome5 name="arrow-left" size={18} color="black" />
+                </TouchableOpacity>
+                <Text style={{ fontSize: 20, fontWeight: "bold", marginLeft: 12 }}>{checkout?.uuid ? <>Venda #{checkout?.uuid.split("-")[0]}</> : "Nova venda"}</Text>
+            </View>
+            <Text style={{ fontSize: 20, fontWeight: "bold" }}>{CheckoutDateMask(checkout?.created_at)}</Text>
+        </View>}
+
+
+
+        <View style={{ flexDirection: "row", justifyContent: "space-between", alignItems: "center", marginBottom: 20, padding: 5 }}>
+            <View >
+                {image ? <>
+                    <Image source={{ uri: image }} style={{ width: 150, height: 180 }} />
+                    <Button title="Remover Imagem" onPress={() => setImage(null)} />
+                </> : <>
+                    <FontAwesome5 name="camera" size={150} color="black" />
+                    <Button title="Selecionar imagem" onPress={() => setChoseTypeModal(true)} />
+                </>}
+
+
+            </View>
+            <View style={{ flex: 1, marginLeft: 20 }}>
+                <TextInput placeholder="Nome do produto" style={{ fontSize: 16, marginBottom: 20, borderWidth: 1, borderRadius: 5, paddingLeft: 5 }} />
+                <TextInput placeholder="Preço" keyboardType='numeric' style={{ fontSize: 16, marginBottom: 20, borderWidth: 1, borderRadius: 5, paddingLeft: 5 }} />
+                <TextInput placeholder="Quantidade" keyboardType='numeric' style={{ fontSize: 16, marginBottom: 20, borderWidth: 1, borderRadius: 5, paddingLeft: 5 }} />
+                <TextInput placeholder="Descrição do produto" style={{ fontSize: 16, marginBottom: 20, borderWidth: 1, borderRadius: 5, paddingLeft: 5 }} multiline={true} numberOfLines={4} />
+
+                <TouchableOpacity style={{ backgroundColor: "black", padding: 10, borderRadius: 10, justifyContent: "center", alignItems: "center" }}>
+                    <Text style={{ color: "white", fontSize: 16, fontWeight: "bold" }}>Adicionar</Text>
+                </TouchableOpacity>
+            </View>
         </View>
+        <View style={{ flex: 1 }}>
+
+        </View>
+
+
+
+
+
+
+
+
+
+
+
+
+
         <Modal visible={camera_modal} animationType="slide" transparent={true} onRequestClose={() => {
             setCameraModal(!camera_modal);
         }}>

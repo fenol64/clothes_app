@@ -30,6 +30,17 @@ export const dateMask = (value) => {
     return `${day}/${month}/${year} ${hour}:${minute}`;
 }
 
+export const CheckoutDateMask = (value) => {
+    if (!value) return '';
+
+    const [date, time] = value.split("T");
+
+    const [year, month, day] = date.split("-");
+    const [hour, minute] = time.split(":");
+
+    return `${day}/${month} ${hour}:${minute}`;
+}
+
 
 const isJson = (str) => {
     try {
