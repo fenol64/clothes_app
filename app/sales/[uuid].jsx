@@ -1,5 +1,5 @@
 import React, { useEffect, useRef, useState } from 'react';
-import { Alert, Button, Image, Modal, StatusBar, Text, TextInput, TouchableOpacity, View } from 'react-native';
+import { Alert, Button, Image, Modal, Pressable, StatusBar, Text, TextInput, TouchableOpacity, View } from 'react-native';
 import * as ImagePicker from 'expo-image-picker';
 import { Camera } from 'expo-camera';
 import { FontAwesome, FontAwesome5 } from '@expo/vector-icons';
@@ -93,15 +93,34 @@ const sales = () => {
         }
     }
 
+    const addCheckoutItem = async () => {
+        try {
+            console.log({ checkout_item_form })
+            const payload = {
+                ...checkout,
+                items: [...checkout.items, checkout_item_form]
+            }
+
+            console.log(payload)
+
+            setCheckout({ ...payload });
+            setCheckoutItemForm({});
+        } catch (error) {
+            Alert.alert("Erro ao adicionar item");
+        }
+    }
 
     useEffect(() => {
         if (params.uuid && params.uuid != "new") getCheckout(params.uuid);
         else createCheckout();
     }, [params]);
 
+    useEffect(() => {
+        console.log(checkout)
+    }, [checkout]);
     return <View style={{ flex: 1, paddingTop: StatusBar.currentHeight, padding: 10 }}>
 
-        {checkout?.uuid && <View style={{ flexDirection: "row", justifyContent: "space-between", alignItems: "center", marginBottom: 20, padding: 5 }}>
+        <View style={{ flexDirection: "row", justifyContent: "space-between", alignItems: "center", marginBottom: 20, padding: 5 }}>
             <View style={{ flexDirection: "row", justifyContent: "space-between", alignItems: "center" }}>
                 <TouchableOpacity onPress={() => route.navigate("/sales")}>
                     <FontAwesome5 name="arrow-left" size={18} color="black" />
@@ -109,9 +128,7 @@ const sales = () => {
                 <Text style={{ fontSize: 20, fontWeight: "bold", marginLeft: 12 }}>{checkout?.uuid ? <>Venda #{checkout?.uuid.split("-")[0]}</> : "Nova venda"}</Text>
             </View>
             <Text style={{ fontSize: 20, fontWeight: "bold" }}>{CheckoutDateMask(checkout?.created_at)}</Text>
-        </View>}
-
-
+        </View>
 
         <View style={{ flexDirection: "row", justifyContent: "space-between", alignItems: "center", marginBottom: 20, padding: 5 }}>
             <View >
@@ -126,32 +143,43 @@ const sales = () => {
 
             </View>
             <View style={{ flex: 1, marginLeft: 20 }}>
-                <TextInput placeholder="Nome do produto" style={{ fontSize: 16, marginBottom: 20, borderWidth: 1, borderRadius: 5, paddingLeft: 5 }} />
-                <TextInput placeholder="Preço" keyboardType='numeric' style={{ fontSize: 16, marginBottom: 20, borderWidth: 1, borderRadius: 5, paddingLeft: 5 }} />
-                <TextInput placeholder="Quantidade" keyboardType='numeric' style={{ fontSize: 16, marginBottom: 20, borderWidth: 1, borderRadius: 5, paddingLeft: 5 }} />
-                <TextInput placeholder="Descrição do produto" style={{ fontSize: 16, marginBottom: 20, borderWidth: 1, borderRadius: 5, paddingLeft: 5 }} multiline={true} numberOfLines={4} />
+                <TextInput placeholder="Nome do produto" style={{ fontSize: 16, marginBottom: 5, borderWidth: 1, borderRadius: 5, paddingLeft: 5 }} />
+                <View style={{ flexDirection: "row", justifyContent: "space-between", alignItems: "center" }}>
+                    <TextInput placeholder="Preço" keyboardType='numeric' style={{ width: "49%", fontSize: 16, marginBottom: 5, borderWidth: 1, borderRadius: 5, paddingLeft: 5 }} />
+                    <TextInput placeholder="QTD" keyboardType='numeric' style={{ width: "49%", fontSize: 16, marginBottom: 5, borderWidth: 1, borderRadius: 5, paddingLeft: 5 }} />
+                </View>
+                <TextInput placeholder="Descrição do produto" style={{ fontSize: 16, marginBottom: 5, borderWidth: 1, borderRadius: 5, paddingLeft: 5 }} multiline={true} numberOfLines={4} />
 
-                <TouchableOpacity style={{ backgroundColor: "black", padding: 10, borderRadius: 10, justifyContent: "center", alignItems: "center" }}>
+                <TouchableOpacity style={{ backgroundColor: "black", padding: 10, borderRadius: 10, justifyContent: "center", alignItems: "center" }} onClick={() => {
+                    console.log("add item")
+                    addCheckoutItem();
+                }}>
                     <Text style={{ color: "white", fontSize: 16, fontWeight: "bold" }}>Adicionar</Text>
                 </TouchableOpacity>
             </View>
         </View>
         <View style={{ flex: 1 }}>
-
+            {checkout?.items?.map((item, index) => {
+                return <View key={index} style={{ flexDirection: "row", justifyContent: "space-between", alignItems: "center", marginBottom: 20, padding: 5, borderTopWidth: 1 }}>
+                    <View style={{ flex: 1 }}>
+                        <Text style={{ fontSize: 20, fontWeight: "bold" }}>{item.name}</Text>
+                        <Text style={{ fontSize: 16, fontWeight: "bold" }}>R$ {item.price.toFixed(2)}</Text>
+                        <Text style={{ fontSize: 16, fontWeight: "bold" }}>Qtd: {item.quantity}</Text>
+                    </View>
+                    <View style={{ flex: 1, marginLeft: 20 }}>
+                        <Text style={{ fontSize: 16, fontWeight: "bold" }}>R$ {(item.price * item.quantity).toFixed(2)}</Text>
+                    </View>
+                </View>
+            })}
         </View>
-
-
-
-
-
-
-
-
-
-
-
-
-
+        <View style={{ flexDirection: "row", justifyContent: "space-between", alignItems: "center", marginBottom: 20, padding: 5, borderTopWidth: 1 }}>
+            <View style={{ flex: 1 }}>
+                <Text style={{ fontSize: 20, fontWeight: "bold" }}>Total: R$ {total?.toFixed(2) ?? "0,00"}</Text>
+            </View>
+            <View style={{ flex: 1, marginLeft: 20 }}>
+                <Button title="Salvar" onPress={() => { }} />
+            </View>
+        </View>
         <Modal visible={camera_modal} animationType="slide" transparent={true} onRequestClose={() => {
             setCameraModal(!camera_modal);
         }}>
